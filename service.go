@@ -4,8 +4,8 @@ type StringService interface {
 	Count(string) int
 }
 
-type stringService struct{}
+type stringServiceImplementation struct{}
 
-func (stringService) Count(s string) int {
+func (stringServiceImplementation) Count(s string) int {
 	return len(s)
 }

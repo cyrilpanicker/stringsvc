@@ -5,22 +5,16 @@ import (
 	"os"
 
 	"github.com/go-kit/kit/log"
-	httptransport "github.com/go-kit/kit/transport/http"
+	httpTransport "github.com/go-kit/kit/transport/http"
 )
 
 func main() {
 	logger := log.NewLogfmtLogger(os.Stderr)
-	stringService := stringService{}
-	http.Handle("/count", httptransport.NewServer(
-		endpointLoggingMiddleware(log.With(logger, "method", "count"))(
-			makeCountEndpoint(
-				stringServiceWithLogging{
-					logger, stringService,
-				},
-			),
-		),
-		decodeCountRequest,
-		encodeCountResponse,
-	))
+	var stringService StringService = stringServiceImplementation{}
+	stringService = stringServiceWithLogging{logger, stringService}
+	var countEndpoint = makeCountEndpoint(stringService)
+	countEndpoint = addLogging(log.With(logger, "method", "count"))(countEndpoint)
+	var countHandler = httpTransport.NewServer(countEndpoint, decodeCountRequest, encodeCountResponse)
+	http.Handle("/count", countHandler)
 	http.ListenAndServe(":8080", nil)
 }

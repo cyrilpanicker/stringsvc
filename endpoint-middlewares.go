@@ -8,7 +8,7 @@ import (
 	"github.com/go-kit/kit/log"
 )
 
-func endpointLoggingMiddleware(logger log.Logger) func(endpoint.Endpoint) endpoint.Endpoint {
+func addLogging(logger log.Logger) func(endpoint.Endpoint) endpoint.Endpoint {
 	return func(next endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 			logger.Log("msg", "calling endpoint")
